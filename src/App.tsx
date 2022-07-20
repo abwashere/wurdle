@@ -1,28 +1,29 @@
 import React from 'react';
 import './App.css';
 
+
+export const Letter = (props: { 
+  letter: string, 
+  state: string 
+}) => {
+  return <div className="letter">{props.letter}</div>
+}
+
+export const Row = (props: { letters?: string[] }) => {
+  const lettersInput = props.letters || ["", "", "", "", ""]
+  const word = <div className="word">
+    {lettersInput.map((letter, i) => (
+      <Letter key={i} letter={letter} state={'something'} />
+    ))}
+  </div>
+  return word
+}
+
 function App() {
-  const wordle = "MEMOS"
+  // const wordle = "MEMOS"
 
-  const rows = new Array()
-  console.log('rows', rows)
+  // const attempts = []
 
-  const handleSubmit = (input: string) => {
-    if (rows.length < 6 && input.length === 5){
-      rows.push(input)
-      return ["H","E","L","L","O"]
-    }
-    return []
-  }
-
-  const testRow = [
-    ["H","E","L","L","O"],
-    ["","","","",""],
-    ["","","","",""],
-    ["","","","",""],
-    ["","","","",""],
-    ["","","","",""],
-  ]
 
   return (
     <div className="App">
@@ -30,12 +31,12 @@ function App() {
         <h1>Wordle</h1>
       </header>
       <div className="App-viewer">
-        {testRow.map(word => (
-        <div className="word">
-          {word.map(letter => (
-            <div className="letter">{letter}</div>
-          ))}
-        </div>))}
+        <Row letters={["H", "E", "L", "L", "O"]} />
+        <Row />
+        <Row />
+        <Row />
+        <Row />
+        <Row />
       </div>
       <div className="App-input">
         <input type="text"/> 
