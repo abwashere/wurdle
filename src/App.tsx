@@ -1,46 +1,77 @@
 import React from 'react';
 import './App.css';
 
-
-export const Letter = (props: { 
-  letter: string, 
-  state: string 
-}) => {
-  return <div className="letter">{props.letter}</div>
+interface ILetter {
+  letter: string,
+  state: string,
 }
 
-export const Row = (props: { letters?: string[] }) => {
-  const lettersInput = props.letters || ["", "", "", "", ""]
+export const ANSWER = "MEMOS"
+
+export const evaluateLetter = (letter: string, index: number) : ILetter => {
+
+  for (let i=0; i < 5; i++) {
+    if (index === i && letter === ANSWER[i]) {
+      return {letter, state: "correct"}
+    }
+  }
+
+  return { letter, state: "absent" }
+}
+
+export const Letter = (props: ILetter ) => {
+  const { letter, state } = props;
+  return <div className={`letter ${state}`}>{letter}</div>
+}
+
+export const Row = ({ lettersArr }: { lettersArr: string[] }) => {
+  const evaluatedLetters = lettersArr.map((el: string, i: number) => evaluateLetter(el, i))
+
   const word = <div className="word">
-    {lettersInput.map((letter, i) => (
-      <Letter key={i} letter={letter} state={'something'} />
-    ))}
+    {evaluatedLetters.map((el, i) => {
+      const { letter, state } = el;
+      return <Letter key={i} letter={letter} state={state} />
+    })}
   </div>
+
   return word
 }
 
 function App() {
-  // const wordle = "MEMOS"
+  const [guess, setGuess] = React.useState("")
 
-  // const attempts = []
+  const [attemptList, setAttemptList] = React.useState([1,1,1,1,1,1].map(() => (["", "", "", "", ""])))
 
+  console.log(attemptList)
+  
+  const handleChange = (e: any) => {
+    let val = e.target.value
+    setGuess(guess => val.toUpperCase().split(""))
+  }
+  
+  const handleSubmit = (e: any) => {
+    e.preventDefault()
+    // TODO
+    console.log(guess)
+  }
 
   return (
     <div className="App">
       <header className="App-header">
         <h1>Wordle</h1>
       </header>
+
       <div className="App-viewer">
-        <Row letters={["H", "E", "L", "L", "O"]} />
-        <Row />
-        <Row />
-        <Row />
-        <Row />
-        <Row />
+        {attemptList.map((attempt, i) => (
+          <Row lettersArr={attempt} key={i} />
+        ))}
       </div>
-      <div className="App-input">
-        <input type="text"/> 
-        <button>submit</button>
+
+      <div className="App-form">
+        <form onSubmit={handleSubmit}>
+          <input type="text" onChange={handleChange} maxLength={5} /> 
+          <button onSubmit={handleSubmit} disabled={guess.length !== 5}>submit</button>
+        </form>
       </div>
     </div>
   );
