@@ -24,8 +24,9 @@ export const Letter = (props: ILetter ) => {
   return <div className={`letter ${state}`}>{letter}</div>
 }
 
-export const Row = ({ lettersArr }: { lettersArr: string[] }) => {
-  const evaluatedLetters = lettersArr.map((el: string, i: number) => evaluateLetter(el, i))
+export const Row = ({ attempt }: { attempt: string }) => {
+  const lettersArr = attempt === "" ? ["","","","",""] : attempt.split("")
+  const evaluatedLetters = lettersArr.map((letter, i) => evaluateLetter(letter, i))
 
   const word = <div className="word">
     {evaluatedLetters.map((el, i) => {
@@ -40,19 +41,28 @@ export const Row = ({ lettersArr }: { lettersArr: string[] }) => {
 function App() {
   const [guess, setGuess] = React.useState("")
 
-  const [attemptList, setAttemptList] = React.useState([1,1,1,1,1,1].map(() => (["", "", "", "", ""])))
+  const [attemptList, setAttemptList] = React.useState(["", "", "", "", ""])
 
   console.log(attemptList)
   
   const handleChange = (e: any) => {
     let val = e.target.value
-    setGuess(guess => val.toUpperCase().split(""))
+    setGuess(guess => val.toUpperCase())
   }
   
   const handleSubmit = (e: any) => {
     e.preventDefault()
-    // TODO
-    console.log(guess)
+    
+    for (let i=0; i<=6; i++) {
+      if (attemptList[i] === ""){
+        setAttemptList(attemptList => {
+          const newList = [...attemptList]
+          newList[i] = guess;
+          return newList
+        })
+        break;
+      }
+    }
   }
 
   return (
@@ -63,7 +73,7 @@ function App() {
 
       <div className="App-viewer">
         {attemptList.map((attempt, i) => (
-          <Row lettersArr={attempt} key={i} />
+          <Row attempt={attempt} key={i} />
         ))}
       </div>
 
