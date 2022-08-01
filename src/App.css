@@ -33,33 +33,34 @@
   font-size: 2rem;
   font-family: Arial, Helvetica, sans-serif;
   text-transform: uppercase;
-  /* color: #FFFFFF; */
+  color: #FFFFFF;
 }
-.App-viewer .letter .correct {
+.App-viewer .letter.correct {
   background-color: #6aaa64;
 } 
-.App-viewer .letter .absent {
+.App-viewer .letter.absent {
   background-color: #787c7e;
 }
-.App-viewer .letter .present {
+.App-viewer .letter.present {
   background-color: #c9b458;
 }
 
-.App-form {
+.App-form form {
   height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.App-form input {
+.App-form form input {
   background-color: white;
   color: #282c34;
   font-size: 20px;
   width: 100px;
   height: 100%;
   margin-right: 20px;
+  box-sizing: border-box; 
 }
-.App-form button {
+.App-form form button {
   height: 100%;
   margin: 0;
   padding: 5px 10px;
