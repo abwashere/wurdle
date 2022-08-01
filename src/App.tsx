@@ -70,12 +70,12 @@ export const Row = ({ attempt }: { attempt: string }) => {
 };
 
 function App() {
-  const [guess, setGuess] = React.useState("");
+  const [input, setInput] = React.useState("");
   const [attemptList, setAttemptList] = React.useState(["", "", "", "", "", ""]);
 
   const handleChange = (e: any) => {
     let val = e.target.value;
-    setGuess(val.toUpperCase());
+    setInput(val.toUpperCase());
   };
 
   const handleSubmit = (e: any) => {
@@ -85,19 +85,19 @@ function App() {
       if (attemptList[i] === "") {
         setAttemptList((attemptList) => {
           const newList = [...attemptList];
-          newList[i] = guess;
+          newList[i] = input;
           return newList;
         });
         break;
       }
     }
 
-    setGuess("");
+    setInput("");
   };
 
   const isDisabled =
-    guess.length !== 5 ||
-    guess.includes(" ") ||
+    input.length !== 5 ||
+    input.includes(" ") ||
     attemptList.every((el) => el !== "");
 
   return (
@@ -117,7 +117,7 @@ function App() {
           <input
             type="text"
             onChange={handleChange}
-            value={guess}
+            value={input}
             maxLength={5}
           />
           <button onSubmit={handleSubmit} disabled={isDisabled}>
