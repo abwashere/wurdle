@@ -17,7 +17,7 @@ const emptyGrid = [1, 1, 1, 1, 1, 1].map(() => [
   { letter: "", state: "" },
   { letter: "", state: "" },
   { letter: "", state: "" },
-])
+]);
 
 export const Letter = (props: ILetter) => {
   const { letter, state } = props;
@@ -47,7 +47,8 @@ export const Row = ({ attempt }: { attempt: ILetter[] }) => {
 function App() {
   const [input, setInput] = React.useState("");
   const [attemptsList, setAttemptsList] = React.useState(emptyGrid);
-  const [hasWon, setHasWon] = React.useState(false);
+  const [hasWon, setHasWon] = React.useState<null | boolean>(null);
+  const [isOpen, setIsOpen] = React.useState(false);
 
   const checkAnswer = (lettersArr: string[]): ILetter[] => {
     let statusArr = [];
@@ -104,9 +105,25 @@ function App() {
   };
 
   const isDisabled =
+    hasWon ||
     input.length !== 5 ||
     input.includes(" ") ||
     attemptsList.every((attempt) => attempt.every((el) => el.letter !== ""));
+
+  React.useEffect(() => {
+    if (
+      attemptsList.some((attempt) =>
+        attempt.every((el) => el.state === "correct")
+      )
+    ) {
+      setHasWon(true);
+      setIsOpen(true);
+    }
+    if (hasWon !== true && attemptsList[5].every((el) => el.letter !== "")) {
+      setHasWon(false);
+      setIsOpen(true);
+    }
+  }, [attemptsList, hasWon]);
 
   return (
     <div className="App">
@@ -134,7 +151,12 @@ function App() {
         </form>
       </div>
 
-      <ResultModal hasWon={hasWon} hasLost={false} />
+      <ResultModal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        hasWon={hasWon}
+        answerWord={ANSWER}
+      />
     </div>
   );
 }
