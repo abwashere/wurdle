@@ -1,44 +1,94 @@
 import React from "react";
 import ResultModal from "./ResultModal";
+import styled, { keyframes } from "styled-components";
 import "./App.css";
 
 interface ILetter {
   letter: string;
   state: string;
+  shouldRotate?: boolean;
+  rotationDelay: number;
 }
 
 export const ANSWER: string = "IMAMS";
 
 const emptyGrid = [1, 1, 1, 1, 1, 1].map(() => [
-  { letter: "", state: "" },
-  { letter: "", state: "" },
-  { letter: "", state: "" },
-  { letter: "", state: "" },
-  { letter: "", state: "" },
-  { letter: "", state: "" },
-  { letter: "", state: "" },
+  { letter: "", state: "", rotationDelay: 0 },
+  { letter: "", state: "", rotationDelay: 0 },
+  { letter: "", state: "", rotationDelay: 0 },
+  { letter: "", state: "", rotationDelay: 0 },
+  { letter: "", state: "", rotationDelay: 0 },
+  { letter: "", state: "", rotationDelay: 0 },
+  { letter: "", state: "", rotationDelay: 0 },
 ]);
 
+const StyledDiv = styled.div<any>`
+  &.rotation {
+    animation-name: ${({ state }) => revealTile(state)};
+    animation-duration: 1s;
+    animation-delay: ${({ rotationDelay }) => rotationDelay + "ms"};
+    animation-fill-mode: forwards; //hold the last keyframe state of animation after animation ends
+  }
+`;
+export const revealTile = (state: string) => keyframes`
+  0% {
+    transform: rotateX(0deg);
+    border: none;
+    background-color: none;
+  }
+  50% {
+    transform: rotateX(90deg);
+    background-color: none;
+  }
+  100% {
+    transform: rotateX(0deg);
+    background-color: ${
+      state === "correct"
+        ? "#6aaa64"
+        : state === "present"
+        ? "#c9b458"
+        : "#3A3A3C"
+    };
+    border: none;
+  }
+`;
+
 export const Letter = (props: ILetter) => {
-  const { letter, state } = props;
-  return <div className={`letter ${state}`}>{letter}</div>;
+  const { letter, state, shouldRotate, rotationDelay } = props;
+  return (
+    <StyledDiv
+      state={state}
+      rotationDelay={rotationDelay}
+      className={`tile ${state} ${shouldRotate && "rotation"}`}
+    >
+      {letter}
+    </StyledDiv>
+  );
 };
 
 export const Row = ({ attempt }: { attempt: ILetter[] }) => {
   if (attempt.every((el) => el.letter === "")) {
     return (
-      <div className="word">
+      <div className="row">
         {["", "", "", "", ""].map((el, i) => {
-          return <Letter key={i} letter={""} state={""} />;
+          return <Letter key={i} letter={""} state={""} rotationDelay={0} />;
         })}
       </div>
     );
   }
   return (
-    <div className="word">
+    <div className="row">
       {attempt.map((el, i) => {
-        const { letter, state } = el;
-        return <Letter key={i} letter={letter} state={state} />;
+        const { letter, state, rotationDelay } = el;
+        return (
+          <Letter
+            key={i}
+            letter={letter}
+            state={state}
+            rotationDelay={rotationDelay}
+            shouldRotate
+          />
+        );
       })}
     </div>
   );
@@ -66,15 +116,27 @@ function App() {
 
     for (let i = 0; i < 5; i++) {
       if (lettersArr[i] === ANSWER[i]) {
-        statusArr.push({ letter: lettersArr[i], state: "correct" });
+        statusArr.push({
+          letter: lettersArr[i],
+          state: "correct",
+          rotationDelay: i * 300,
+        });
       } else if (
         answerMap.has(lettersArr[i]) &&
         answerMap.get(lettersArr[i]) > 0
       ) {
         answerMap.set(lettersArr[i], answerMap.get(lettersArr[i]) - 1);
-        statusArr.push({ letter: lettersArr[i], state: "present" });
+        statusArr.push({
+          letter: lettersArr[i],
+          state: "present",
+          rotationDelay: i * 300,
+        });
       } else {
-        statusArr.push({ letter: lettersArr[i], state: "absent" });
+        statusArr.push({
+          letter: lettersArr[i],
+          state: "absent",
+          rotationDelay: i * 300,
+        });
       }
     }
 
@@ -128,10 +190,10 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>Wordle</h1>
+        <h1>Wurdle</h1>
       </header>
 
-      <div className="App-viewer">
+      <div className="App-board">
         {attemptsList.map((attempt, i) => (
           <Row attempt={attempt} key={i} />
         ))}
@@ -146,7 +208,7 @@ function App() {
             maxLength={5}
           />
           <button onSubmit={handleSubmit} disabled={isDisabled}>
-            submit
+            SUBMIT
           </button>
         </form>
       </div>
