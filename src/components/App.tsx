@@ -1,6 +1,12 @@
 import React from "react";
-import ResultModal from "./ResultModal";
 import styled, { keyframes } from "styled-components";
+
+import FR_WORDS from "../data/fr-words";
+import EN_WORDS from "../data/en-words";
+
+import ResultModal from "./ResultModal";
+import LanguageSelect from "./LanguageSelect";
+
 import "./App.css";
 
 interface ILetter {
@@ -95,6 +101,7 @@ export const Row = ({ attempt }: { attempt: ILetter[] }) => {
 };
 
 function App() {
+  const [locale, setLocale] = React.useState("EN");
   const [input, setInput] = React.useState("");
   const [attemptsList, setAttemptsList] = React.useState(emptyGrid);
   const [hasWon, setHasWon] = React.useState<null | boolean>(null);
@@ -209,6 +216,9 @@ function App() {
     <div className="App">
       <header className="App-header">
         <h1>Wurdle</h1>
+        <div>
+          <LanguageSelect locale={locale} setLocale={setLocale} />
+        </div>
       </header>
 
       <div className="App-board">
