@@ -10,7 +10,7 @@ interface ILetter {
   rotationDelay: number;
 }
 
-export const ANSWER: string = "IMAMS";
+export const ANSWER = "MOMMY";
 
 const emptyGrid = [1, 1, 1, 1, 1, 1].map(() => [
   { letter: "", state: "", rotationDelay: 0 },
@@ -25,7 +25,7 @@ const emptyGrid = [1, 1, 1, 1, 1, 1].map(() => [
 const StyledDiv = styled.div<any>`
   &.rotation {
     animation-name: ${({ state }) => revealTile(state)};
-    animation-duration: 1s;
+    animation-duration: 0.6s;
     animation-delay: ${({ rotationDelay }) => rotationDelay + "ms"};
     animation-fill-mode: forwards; //hold the last keyframe state of animation after animation ends
   }
@@ -100,6 +100,8 @@ function App() {
   const [hasWon, setHasWon] = React.useState<null | boolean>(null);
   const [isOpen, setIsOpen] = React.useState(false);
 
+  const inputRef = React.useRef<HTMLInputElement>(null);
+
   const checkAnswer = (lettersArr: string[]): ILetter[] => {
     let statusArr = [];
 
@@ -143,6 +145,20 @@ function App() {
     return statusArr;
   };
 
+  const onlyAlphabet = (e: any) => {
+    const keyCheck = /^[a-zA-Z]+$/; // only letters
+
+    const inputVal = e.target.value;
+
+    if (inputRef.current) {
+      if (keyCheck.test(inputVal)) {
+        inputRef.current.value = inputVal;
+      } else {
+        inputRef.current.value = inputVal.slice(0, -1);
+      }
+    }
+  };
+
   const handleChange = (e: any) => {
     let val = e.target.value;
     setInput(val.toUpperCase());
@@ -178,8 +194,10 @@ function App() {
         attempt.every((el) => el.state === "correct")
       )
     ) {
-      setHasWon(true);
-      setIsOpen(true);
+      setTimeout(() => {
+        setHasWon(true);
+        setIsOpen(true);
+      }, 2000);
     }
     if (hasWon !== true && attemptsList[5].every((el) => el.letter !== "")) {
       setHasWon(false);
@@ -202,10 +220,13 @@ function App() {
       <div className="App-form">
         <form onSubmit={handleSubmit}>
           <input
+            ref={inputRef}
             type="text"
             onChange={handleChange}
             value={input}
             maxLength={5}
+            onInput={onlyAlphabet} // prevent entering value of keys that are not letters
+            // oninput event occurs immediately after the value has changed, while onchange occurs when the element loses focus, after the content has been changed
           />
           <button onSubmit={handleSubmit} disabled={isDisabled}>
             SUBMIT
