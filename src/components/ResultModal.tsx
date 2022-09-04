@@ -10,14 +10,19 @@ const StyledContainer = styled.div`
   z-index: 100;
   margin: auto;
   padding: 30px 40px;
-  width: 50%;
+  width: 30%;
   max-width: 500px;
   box-shadow: 5px 5px 25px #000;
   background-color: #000;
+  border: 1px solid #fff;
   color: #fff;
   text-align: center;
-  font-size: 25px;
   font-family: Arial, Helvetica, sans-serif;
+
+  .answer {
+    font-size: 25px;
+    font-weight: 600;
+  }
 `;
 
 const Overlay = styled.div`
@@ -40,12 +45,12 @@ const ResultModal = ({
   isOpen,
   onClose,
   hasWon,
-  answerWord,
+  answer,
 }: {
   isOpen: boolean;
   onClose: () => void;
   hasWon: null | boolean;
-  answerWord: string;
+  answer: string;
 }) => {
   if (!isOpen) return null;
 
@@ -53,13 +58,10 @@ const ResultModal = ({
     <>
       <Overlay />
       <StyledContainer>
-        <h2>{hasWon ? "NICE JOB!" : "OH NOOO :("}</h2>
-        <p>
-          The answer was
-          <br />
-          <br />
-          {answerWord}
-        </p>
+        <p>{hasWon ? "NICE JOB!" : "OH NOOO :("}</p>
+        <p>The answer was</p>
+        <p className="answer">{answer}</p>
+
         <CloseButton onClick={onClose}>X</CloseButton>
       </StyledContainer>
     </>,

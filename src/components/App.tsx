@@ -221,9 +221,10 @@ function App() {
         setHasWon(true);
         setIsOpen(true);
       }, 2000);
-    }
-    if (hasWon !== true && attemptsList[5].every((el) => el.letter !== "")) {
-      // FIXME
+    } else if (
+      hasWon !== true &&
+      attemptsList[5].every((el) => el.letter !== "")
+    ) {
       setTimeout(() => {
         setHasWon(false);
         setIsOpen(true);
@@ -279,7 +280,7 @@ function App() {
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
         hasWon={hasWon}
-        answerWord={wurdle}
+        answer={wurdle}
       />
     </div>
   );
