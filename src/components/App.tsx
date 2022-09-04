@@ -16,7 +16,8 @@ interface ILetter {
   rotationDelay: number;
 }
 
-export const ANSWER = "MOMMY";
+export const FR_LOCAL = "FR";
+export const EN_LOCAL = "EN";
 
 const emptyGrid = [1, 1, 1, 1, 1, 1].map(() => [
   { letter: "", state: "", rotationDelay: 0 },
@@ -101,22 +102,32 @@ export const Row = ({ attempt }: { attempt: ILetter[] }) => {
 };
 
 function App() {
-  const [locale, setLocale] = React.useState("EN");
+  const [locale, setLocale] = React.useState(EN_LOCAL);
   const [input, setInput] = React.useState("");
   const [attemptsList, setAttemptsList] = React.useState(emptyGrid);
   const [hasWon, setHasWon] = React.useState<null | boolean>(null);
   const [isOpen, setIsOpen] = React.useState(false);
+  const [wurdle, setWurdle] = React.useState("");
 
   const inputRef = React.useRef<HTMLInputElement>(null);
+
+  React.useEffect(() => {
+    const newWord =
+      locale === EN_LOCAL
+        ? EN_WORDS[Math.floor(Math.random() * EN_WORDS.length)]
+        : FR_WORDS[Math.floor(Math.random() * EN_WORDS.length)];
+
+    !wurdle && setWurdle(newWord);
+  }, []);
 
   const checkAnswer = (lettersArr: string[]): ILetter[] => {
     let statusArr = [];
 
-    // count each letter appearance in the answer
+    // count each letter appearance in the wurdle
     // only those which are present (but not at the right place)
     let answerMap = new Map();
     let ind = 0;
-    for (const letter of ANSWER.split("")) {
+    for (const letter of wurdle.split("")) {
       if (letter !== lettersArr[ind]) {
         answerMap.set(letter, (answerMap.get(letter) || 0) + 1);
       }
@@ -124,7 +135,7 @@ function App() {
     }
 
     for (let i = 0; i < 5; i++) {
-      if (lettersArr[i] === ANSWER[i]) {
+      if (lettersArr[i] === wurdle[i]) {
         statusArr.push({
           letter: lettersArr[i],
           state: "correct",
@@ -154,7 +165,6 @@ function App() {
 
   const onlyAlphabet = (e: any) => {
     const keyCheck = /^[a-zA-Z]+$/; // only letters
-
     const inputVal = e.target.value;
 
     if (inputRef.current) {
@@ -207,8 +217,10 @@ function App() {
       }, 2000);
     }
     if (hasWon !== true && attemptsList[5].every((el) => el.letter !== "")) {
-      setHasWon(false);
-      setIsOpen(true);
+      setTimeout(() => {
+        setHasWon(false);
+        setIsOpen(true);
+      }, 2000);
     }
   }, [attemptsList, hasWon]);
 
@@ -234,9 +246,10 @@ function App() {
             type="text"
             onChange={handleChange}
             value={input}
+            placeholder={locale === EN_LOCAL ? "Type here" : "Ecrivez ici"}
             maxLength={5}
             onInput={onlyAlphabet} // prevent entering value of keys that are not letters
-            // oninput event occurs immediately after the value has changed, while onchange occurs when the element loses focus, after the content has been changed
+            // oninput event occurs immediately after the value has changed, while onchange occurs after the content has been changed
           />
           <button onSubmit={handleSubmit} disabled={isDisabled}>
             SUBMIT
@@ -248,7 +261,7 @@ function App() {
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
         hasWon={hasWon}
-        answerWord={ANSWER}
+        answerWord={wurdle}
       />
     </div>
   );
