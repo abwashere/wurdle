@@ -6,6 +6,7 @@ import EN_WORDS from "../data/en-words";
 
 import ResultModal from "./ResultModal";
 import LanguageSelect from "./LanguageSelect";
+import Keys from "./Keys";
 
 import "./App.css";
 
@@ -20,8 +21,6 @@ export const FR_LOCAL = "FR";
 export const EN_LOCAL = "EN";
 
 const emptyGrid = [1, 1, 1, 1, 1, 1].map(() => [
-  { letter: "", state: "", rotationDelay: 0 },
-  { letter: "", state: "", rotationDelay: 0 },
   { letter: "", state: "", rotationDelay: 0 },
   { letter: "", state: "", rotationDelay: 0 },
   { letter: "", state: "", rotationDelay: 0 },
@@ -108,17 +107,9 @@ function App() {
   const [hasWon, setHasWon] = React.useState<null | boolean>(null);
   const [isOpen, setIsOpen] = React.useState(false);
   const [wurdle, setWurdle] = React.useState("");
+  const [disabledLetters, setDisabledLetters] = React.useState<string[]>([]);
 
   const inputRef = React.useRef<HTMLInputElement>(null);
-
-  React.useEffect(() => {
-    const newWord =
-      locale === EN_LOCAL
-        ? EN_WORDS[Math.floor(Math.random() * EN_WORDS.length)]
-        : FR_WORDS[Math.floor(Math.random() * EN_WORDS.length)];
-
-    !wurdle && setWurdle(newWord);
-  }, []);
 
   const checkAnswer = (lettersArr: string[]): ILetter[] => {
     let statusArr = [];
@@ -163,12 +154,17 @@ function App() {
     return statusArr;
   };
 
-  const onlyAlphabet = (e: any) => {
+  const handleInput = (e: any) => {
+    const inputVal = e.target.value.toUpperCase();
     const keyCheck = /^[a-zA-Z]+$/; // only letters
-    const inputVal = e.target.value;
 
     if (inputRef.current) {
-      if (keyCheck.test(inputVal)) {
+      if (
+        keyCheck.test(inputVal) &&
+        !disabledLetters.includes(inputVal[inputVal.length - 1])
+      ) {
+        // Enable typing only alphabet letters
+        // and letters that are in the wurdle to discover
         inputRef.current.value = inputVal;
       } else {
         inputRef.current.value = inputVal.slice(0, -1);
@@ -183,18 +179,28 @@ function App() {
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
+    const evaluatedLetters = checkAnswer(input.split(""));
 
+    // Add input in attempts list
     for (let i = 0; i <= 6; i++) {
       if (attemptsList[i].every((el) => el.letter === "")) {
         setAttemptsList((attemptsList) => {
           const newList = [...attemptsList];
-          const evaluatedLetters = checkAnswer(input.split(""));
           newList[i] = evaluatedLetters;
           return newList;
         });
         break;
       }
     }
+
+    // Add absent letters in disabled letters list
+    let wrongLetters = [];
+    for (let letter of input) {
+      if (!wurdle.match(letter)) {
+        wrongLetters.push(letter);
+      }
+    }
+    setDisabledLetters([...disabledLetters, ...wrongLetters]);
 
     setInput("");
   };
@@ -217,12 +223,22 @@ function App() {
       }, 2000);
     }
     if (hasWon !== true && attemptsList[5].every((el) => el.letter !== "")) {
+      // FIXME
       setTimeout(() => {
         setHasWon(false);
         setIsOpen(true);
       }, 2000);
     }
   }, [attemptsList, hasWon]);
+
+  React.useEffect(() => {
+    const newWord =
+      locale === EN_LOCAL
+        ? EN_WORDS[Math.floor(Math.random() * EN_WORDS.length)]
+        : FR_WORDS[Math.floor(Math.random() * EN_WORDS.length)];
+
+    !wurdle && setWurdle(newWord);
+  }, []);
 
   return (
     <div className="App">
@@ -239,6 +255,8 @@ function App() {
         ))}
       </div>
 
+      <Keys disabledKeys={disabledLetters} />
+
       <div className="App-form">
         <form onSubmit={handleSubmit}>
           <input
@@ -248,7 +266,7 @@ function App() {
             value={input}
             placeholder={locale === EN_LOCAL ? "Type here" : "Ecrivez ici"}
             maxLength={5}
-            onInput={onlyAlphabet} // prevent entering value of keys that are not letters
+            onInput={handleInput} // prevent entering value of keys that are not letters
             // oninput event occurs immediately after the value has changed, while onchange occurs after the content has been changed
           />
           <button onSubmit={handleSubmit} disabled={isDisabled}>
