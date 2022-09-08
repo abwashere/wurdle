@@ -1,18 +1,15 @@
 import React from "react";
 import styled from "styled-components";
+import { LANG_SELECT_HEIGHT, EN_LOCAL, FR_LOCAL } from "../constants";
 
 import { ReactComponent as Globe } from "./assets/globe-solid.svg";
-
-const HEIGHT = 20;
-const FR_LOCAL = "FR";
-const EN_LOCAL = "EN";
 
 const StyledDiv = styled.div`
   position: absolute;
   right: 10px;
   top: 10px;
   width: ${({ isOpen }: { isOpen: boolean }) => (isOpen ? "120px" : "inherit")};
-  height: ${HEIGHT}px;
+  height: ${LANG_SELECT_HEIGHT}px;
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -20,8 +17,12 @@ const StyledDiv = styled.div`
   select {
     font-size: 12px;
     position: absolute;
-    right: 30px;
+    right: 55px;
   }
+`;
+const StyledLocale = styled.div`
+  font-family: Arial, Helvetica, sans-serif;
+  margin-left: 5px;
 `;
 
 const LanguageSelect = ({
@@ -40,22 +41,25 @@ const LanguageSelect = ({
   };
 
   return (
-    <StyledDiv isOpen={openSelect}>
-      {openSelect && (
-        <select
-          onChange={handleChange}
-          defaultValue={locale === EN_LOCAL ? EN_LOCAL : FR_LOCAL}
-        >
-          <option value={FR_LOCAL}>Français</option>
-          <option value={EN_LOCAL}>English</option>
-        </select>
-      )}
-      <Globe
-        fill="#fff"
-        height={`${HEIGHT}px`}
-        onClick={() => setOpenSelect(!openSelect)}
-      />
-    </StyledDiv>
+    <>
+      <StyledDiv isOpen={openSelect}>
+        {openSelect && (
+          <select
+            onChange={handleChange}
+            defaultValue={locale === EN_LOCAL ? EN_LOCAL : FR_LOCAL}
+          >
+            <option value={FR_LOCAL}>Français</option>
+            <option value={EN_LOCAL}>English</option>
+          </select>
+        )}
+        <Globe
+          fill="#fff"
+          height={`${LANG_SELECT_HEIGHT}px`}
+          onClick={() => setOpenSelect(!openSelect)}
+        />
+        <StyledLocale>{locale.toUpperCase()}</StyledLocale>
+      </StyledDiv>
+    </>
   );
 };
 

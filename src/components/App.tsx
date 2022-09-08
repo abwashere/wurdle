@@ -1,8 +1,9 @@
 import React from "react";
 import styled, { keyframes } from "styled-components";
 
-import FR_WORDS from "../data/fr-words";
-import EN_WORDS from "../data/en-words";
+import { EN_LOCAL, FR_LOCAL } from "../constants";
+import FR_WORDS from "./data/frWords";
+import EN_WORDS from "./data/enWords";
 
 import ResultModal from "./ResultModal";
 import LanguageSelect from "./LanguageSelect";
@@ -16,9 +17,6 @@ interface ILetter {
   shouldRotate?: boolean;
   rotationDelay: number;
 }
-
-export const FR_LOCAL = "FR";
-export const EN_LOCAL = "EN";
 
 const emptyGrid = [1, 1, 1, 1, 1, 1].map(() => [
   { letter: "", state: "", rotationDelay: 0 },
@@ -73,10 +71,10 @@ export const Letter = (props: ILetter) => {
 };
 
 export const Row = ({ attempt }: { attempt: ILetter[] }) => {
-  if (attempt.every((el) => el.letter === "")) {
+  if (attempt.every((tile) => tile.letter === "")) {
     return (
       <div className="row">
-        {["", "", "", "", ""].map((el, i) => {
+        {["", "", "", "", ""].map((tile, i) => {
           return <Letter key={i} letter={""} state={""} rotationDelay={0} />;
         })}
       </div>
@@ -84,15 +82,15 @@ export const Row = ({ attempt }: { attempt: ILetter[] }) => {
   }
   return (
     <div className="row">
-      {attempt.map((el, i) => {
-        const { letter, state, rotationDelay } = el;
+      {attempt.map((tile, i) => {
+        const { letter, state, rotationDelay } = tile;
         return (
           <Letter
             key={i}
             letter={letter}
             state={state}
             rotationDelay={rotationDelay}
-            shouldRotate
+            shouldRotate={state !== ""}
           />
         );
       })}
@@ -101,15 +99,14 @@ export const Row = ({ attempt }: { attempt: ILetter[] }) => {
 };
 
 function App() {
-  const [locale, setLocale] = React.useState(EN_LOCAL);
+  const [locale, setLocale] = React.useState(FR_LOCAL);
   const [input, setInput] = React.useState("");
   const [attemptsList, setAttemptsList] = React.useState(emptyGrid);
   const [hasWon, setHasWon] = React.useState<null | boolean>(null);
   const [isOpen, setIsOpen] = React.useState(false);
   const [wurdle, setWurdle] = React.useState("");
   const [disabledLetters, setDisabledLetters] = React.useState<string[]>([]);
-
-  const inputRef = React.useRef<HTMLInputElement>(null);
+  const [disableClick, setDisableClick] = React.useState(false);
 
   const checkAnswer = (lettersArr: string[]): ILetter[] => {
     let statusArr = [];
@@ -154,42 +151,74 @@ function App() {
     return statusArr;
   };
 
-  const handleInput = (e: any) => {
-    const inputVal = e.target.value.toUpperCase();
-    const keyCheck = /^[a-zA-Z]+$/; // only letters
-
-    if (inputRef.current) {
-      if (
-        keyCheck.test(inputVal) &&
-        !disabledLetters.includes(inputVal[inputVal.length - 1])
-      ) {
-        // Enable typing only alphabet letters
-        // and letters that are in the wurdle to discover
-        inputRef.current.value = inputVal;
-      } else {
-        inputRef.current.value = inputVal.slice(0, -1);
+  const addLetter = (pushedLetter: string) => {
+    for (let i = 0; i < attemptsList.length; i++) {
+      // Find the first letter that is empty
+      let currentAttempt = attemptsList[i];
+      let emptyTileIndex = currentAttempt.findIndex(
+        (tile) => tile.letter === ""
+      );
+      if (emptyTileIndex >= 0) {
+        setAttemptsList((attemptsList) => {
+          const newList = [...attemptsList];
+          const emptyTile = newList[i][emptyTileIndex];
+          emptyTile.letter = pushedLetter;
+          return newList;
+        });
+        if (emptyTileIndex === 4) {
+          setDisableClick(true);
+        }
+        break;
       }
     }
+    const inputVal = input;
+    const newInputVal = inputVal + pushedLetter;
+    setInput(newInputVal);
   };
 
-  const handleChange = (e: any) => {
-    let val = e.target.value;
-    setInput(val.toUpperCase());
+  const handleClear = () => {
+    if (input !== "") {
+      setInput("");
+      for (let i = 0; i < attemptsList.length; i++) {
+        const isNextAttemptEmpty = attemptsList[i + 1]?.every(
+          (tile) => tile.letter === ""
+        );
+        const isLastAttempt = i === 6;
+        if (isLastAttempt || isNextAttemptEmpty) {
+          const cleanAttempts = [...attemptsList];
+          cleanAttempts[i].forEach((tile) => {
+            tile.letter = "";
+          });
+          break;
+        }
+      }
+      setDisableClick(false);
+    }
   };
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
     const evaluatedLetters = checkAnswer(input.split(""));
 
-    // Add input in attempts list
-    for (let i = 0; i <= 6; i++) {
-      if (attemptsList[i].every((el) => el.letter === "")) {
-        setAttemptsList((attemptsList) => {
-          const newList = [...attemptsList];
-          newList[i] = evaluatedLetters;
-          return newList;
-        });
-        break;
+    if (disableClick) {
+      for (let i = 0; i < attemptsList.length; i++) {
+        const isCurrentAttemptEmpty = attemptsList[i].every(
+          (tile) => tile.letter === ""
+        );
+        const isNextAttemptEmpty =
+          i === attemptsList.length - 1
+            ? true
+            : attemptsList[i + 1].every((tile) => tile.letter === "");
+
+        // Replace last attempt with evaluated letters
+        if (!isCurrentAttemptEmpty && isNextAttemptEmpty) {
+          setAttemptsList((attemptsList) => {
+            const evaluatedList = [...attemptsList];
+            evaluatedList[i] = evaluatedLetters;
+            return evaluatedList;
+          });
+          break;
+        }
       }
     }
 
@@ -201,34 +230,29 @@ function App() {
       }
     }
     setDisabledLetters([...disabledLetters, ...wrongLetters]);
+    setDisableClick(false);
 
     setInput("");
   };
 
-  const isDisabled =
-    hasWon ||
-    input.length !== 5 ||
-    input.includes(" ") ||
-    attemptsList.every((attempt) => attempt.every((el) => el.letter !== ""));
-
   React.useEffect(() => {
     if (
       attemptsList.some((attempt) =>
-        attempt.every((el) => el.state === "correct")
+        attempt.every((tile) => tile.state === "correct")
       )
     ) {
       setTimeout(() => {
         setHasWon(true);
         setIsOpen(true);
-      }, 2000);
+      }, 2500);
     } else if (
       hasWon !== true &&
-      attemptsList[5].every((el) => el.letter !== "")
+      attemptsList[5].every((tile) => tile.letter !== "")
     ) {
       setTimeout(() => {
         setHasWon(false);
         setIsOpen(true);
-      }, 2000);
+      }, 2500);
     }
   }, [attemptsList, hasWon]);
 
@@ -239,6 +263,7 @@ function App() {
         : FR_WORDS[Math.floor(Math.random() * EN_WORDS.length)];
 
     !wurdle && setWurdle(newWord);
+    // eslint-disable-next-line
   }, []);
 
   return (
@@ -256,25 +281,14 @@ function App() {
         ))}
       </div>
 
-      <Keys disabledKeys={disabledLetters} />
-
-      <div className="App-form">
-        <form onSubmit={handleSubmit}>
-          <input
-            ref={inputRef}
-            type="text"
-            onChange={handleChange}
-            value={input}
-            placeholder={locale === EN_LOCAL ? "Type here" : "Ecrivez ici"}
-            maxLength={5}
-            onInput={handleInput} // prevent entering value of keys that are not letters
-            // oninput event occurs immediately after the value has changed, while onchange occurs after the content has been changed
-          />
-          <button onSubmit={handleSubmit} disabled={isDisabled}>
-            SUBMIT
-          </button>
-        </form>
-      </div>
+      <Keys
+        locale={locale}
+        disabledKeys={disabledLetters}
+        disableClick={disableClick}
+        addLetter={addLetter}
+        clearInput={handleClear}
+        submitInput={handleSubmit}
+      />
 
       <ResultModal
         isOpen={isOpen}

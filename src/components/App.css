@@ -66,37 +66,3 @@
     font-size: 1.6em;
   }
 }
-
-.App-form form {
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.App-form form input {
-  background-color: #ffffff;
-  color: #282c34;
-  font-size: 20px;
-  width: 100px;
-  height: 100%;
-  margin-right: 20px;
-  box-sizing: border-box;
-  border: none;
-}
-.App-form form input[type="text" i] {
-  text-align: center;
-}
-.App-form form input::placeholder {
-  font-size: 15px;
-}
-.App-form form button {
-  height: 100%;
-  margin: 0;
-  padding: 5px 20px;
-  color: #ffffff;
-  background-color: #787c7e;
-}
-.App-form form button:disabled {
-  color: #484a4d;
-  background-color: #282c34;
-}
