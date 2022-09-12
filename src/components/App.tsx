@@ -1,15 +1,29 @@
 import React from "react";
-import styled, { keyframes } from "styled-components";
+import styled from "styled-components";
 
 import { EN_LOCAL, FR_LOCAL } from "../constants";
 import FR_WORDS from "./data/frWords";
 import EN_WORDS from "./data/enWords";
+import { revealTile, shakeTiles } from "./animations";
 
 import ResultModal from "./ResultModal";
 import LanguageSelect from "./LanguageSelect";
 import Keys from "./Keys";
 
 import "./App.css";
+
+const StyledDiv = styled.div<any>`
+  &.rotation {
+    animation-name: ${({ state }) => revealTile(state)};
+    animation-duration: 0.6s;
+    animation-delay: ${({ rotationDelay }) => rotationDelay + "ms"};
+    animation-fill-mode: forwards; // Hold the last keyframe state of animation after animation ends
+  }
+  &.shaking {
+    animation-name: ${({ state }) => shakeTiles(state)};
+    animation-duration: 0.6s;
+  }
+`;
 
 interface ILetter {
   letter: string;
@@ -26,44 +40,13 @@ const emptyGrid = [1, 1, 1, 1, 1, 1].map(() => [
   { letter: "", state: "", rotationDelay: 0 },
 ]);
 
-const StyledDiv = styled.div<any>`
-  &.rotation {
-    animation-name: ${({ state }) => revealTile(state)};
-    animation-duration: 0.6s;
-    animation-delay: ${({ rotationDelay }) => rotationDelay + "ms"};
-    animation-fill-mode: forwards; //hold the last keyframe state of animation after animation ends
-  }
-`;
-export const revealTile = (state: string) => keyframes`
-  0% {
-    transform: rotateX(0deg);
-    border: none;
-    background-color: none;
-  }
-  50% {
-    transform: rotateX(90deg);
-    background-color: none;
-  }
-  100% {
-    transform: rotateX(0deg);
-    background-color: ${
-      state === "correct"
-        ? "#6aaa64"
-        : state === "present"
-        ? "#c9b458"
-        : "#3A3A3C"
-    };
-    border: none;
-  }
-`;
-
 export const Letter = (props: ILetter) => {
   const { letter, state, shouldRotate, rotationDelay } = props;
   return (
     <StyledDiv
       state={state}
       rotationDelay={rotationDelay}
-      className={`tile ${state} ${shouldRotate && "rotation"}`}
+      className={`tile ${state} ${shouldRotate ? "rotation" : ""}`}
     >
       {letter}
     </StyledDiv>
@@ -188,6 +171,7 @@ function App() {
           const cleanAttempts = [...attemptsList];
           cleanAttempts[i].forEach((tile) => {
             tile.letter = "";
+            tile.state = "";
           });
           break;
         }
@@ -196,8 +180,19 @@ function App() {
     }
   };
 
+  const isWordFromTheList = () => {
+    if (
+      (locale === EN_LOCAL && !EN_WORDS.includes(input)) ||
+      (locale === FR_LOCAL && !FR_WORDS.includes(input))
+    ) {
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = (e: any) => {
     e.preventDefault();
+
     const evaluatedLetters = checkAnswer(input.split(""));
 
     if (disableClick) {
@@ -210,8 +205,19 @@ function App() {
             ? true
             : attemptsList[i + 1].every((tile) => tile.letter === "");
 
-        // Replace last attempt with evaluated letters
         if (!isCurrentAttemptEmpty && isNextAttemptEmpty) {
+          // If input is not a word of the list, make it shake
+          if (!isWordFromTheList()) {
+            setAttemptsList((attemptsList) => {
+              const attemptsArr = [...attemptsList];
+              attemptsArr[i].forEach((tile) => {
+                tile.state = "shaking";
+              });
+              return attemptsArr;
+            });
+            break;
+          }
+          // Replace last attempt with evaluated letters
           setAttemptsList((attemptsList) => {
             const evaluatedList = [...attemptsList];
             evaluatedList[i] = evaluatedLetters;
@@ -222,17 +228,19 @@ function App() {
       }
     }
 
-    // Add absent letters in disabled letters list
-    let wrongLetters = [];
-    for (let letter of input) {
-      if (!wurdle.match(letter)) {
-        wrongLetters.push(letter);
+    if (isWordFromTheList()) {
+      // Add absent letters in disabled letters list
+      let wrongLetters = [];
+      for (let letter of input) {
+        if (!wurdle.match(letter)) {
+          wrongLetters.push(letter);
+        }
       }
-    }
-    setDisabledLetters([...disabledLetters, ...wrongLetters]);
-    setDisableClick(false);
+      setDisabledLetters([...disabledLetters, ...wrongLetters]);
+      setDisableClick(false);
 
-    setInput("");
+      setInput("");
+    }
   };
 
   React.useEffect(() => {
