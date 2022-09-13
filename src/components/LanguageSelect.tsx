@@ -28,9 +28,11 @@ const StyledLocale = styled.div`
 const LanguageSelect = ({
   locale,
   setLocale,
+  disabled, // disable changing the language when a game already started
 }: {
   locale: string;
   setLocale: (a: string) => void;
+  disabled: boolean;
 }) => {
   const [openSelect, setOpenSelect] = React.useState(false);
 
@@ -55,7 +57,7 @@ const LanguageSelect = ({
         <Globe
           fill="#fff"
           height={`${LANG_SELECT_HEIGHT}px`}
-          onClick={() => setOpenSelect(!openSelect)}
+          onClick={() => !disabled && setOpenSelect(!openSelect)}
         />
         <StyledLocale>{locale.toUpperCase()}</StyledLocale>
       </StyledDiv>

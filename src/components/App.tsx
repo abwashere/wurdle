@@ -269,18 +269,20 @@ function App() {
     const newWord =
       locale === EN_LOCAL
         ? EN_WORDS[Math.floor(Math.random() * EN_WORDS.length)]
-        : FR_WORDS[Math.floor(Math.random() * EN_WORDS.length)];
-
-    !wurdle && setWurdle(newWord);
-    // eslint-disable-next-line
-  }, []);
+        : FR_WORDS[Math.floor(Math.random() * FR_WORDS.length)];
+    setWurdle(newWord);
+  }, [locale]);
 
   return (
     <div className="App">
       <header className="App-header">
         <h1>Wurdle</h1>
         <div>
-          <LanguageSelect locale={locale} setLocale={setLocale} />
+          <LanguageSelect
+            locale={locale}
+            setLocale={setLocale}
+            disabled={attemptsList[0].every((tile) => tile.state !== "")} // disable changing the language when a game already started
+          />
         </div>
       </header>
 
