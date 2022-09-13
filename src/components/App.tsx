@@ -163,10 +163,12 @@ function App() {
     if (input !== "") {
       setInput("");
       for (let i = 0; i < attemptsList.length; i++) {
-        const isNextAttemptEmpty = attemptsList[i + 1]?.every(
-          (tile) => tile.letter === ""
-        );
-        const isLastAttempt = i === 6;
+        const isNextAttemptEmpty =
+          i === attemptsList.length - 1
+            ? true
+            : attemptsList[i + 1].every((tile) => tile.letter === "");
+        const isLastAttempt = i === 5;
+
         if (isLastAttempt || isNextAttemptEmpty) {
           const cleanAttempts = [...attemptsList];
           cleanAttempts[i].forEach((tile) => {
@@ -204,7 +206,6 @@ function App() {
           i === attemptsList.length - 1
             ? true
             : attemptsList[i + 1].every((tile) => tile.letter === "");
-        // FIXME: might not be true for last attempt
 
         if (!isCurrentAttemptEmpty && isNextAttemptEmpty) {
           // If input is not a word of the list, make it shake
@@ -218,7 +219,7 @@ function App() {
             });
             break;
           }
-          // Replace last attempt with evaluated letters
+          // If word is in the list: replace last attempt with evaluated letters
           setAttemptsList((attemptsList) => {
             const evaluatedList = [...attemptsList];
             evaluatedList[i] = evaluatedLetters;
@@ -255,8 +256,7 @@ function App() {
         setIsOpen(true);
       }, 2500);
     } else if (
-      hasWon !== true &&
-      attemptsList[5].every((tile) => tile.letter !== "")
+      attemptsList[attemptsList.length - 1].every((tile) => tile.state !== "")
     ) {
       setTimeout(() => {
         setHasWon(false);

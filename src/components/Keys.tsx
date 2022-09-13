@@ -90,7 +90,7 @@ const Keys = ({
   submitInput,
 }: {
   locale: string;
-  absentKeys: string[]; // TODO: => absentKeys
+  absentKeys: string[];
   disableClick: boolean;
   addLetter: (a: string) => void;
   clearInput: () => void;
