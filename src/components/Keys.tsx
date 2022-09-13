@@ -38,20 +38,21 @@ const KeysGrid = styled.div`
   grid-gap: 5px;
   justify-content: center;
   width: 350px;
-  margin: 0px auto 5px;
+  margin: 0px auto 8px;
   color: #fff;
   font-family: Arial, Helvetica, sans-serif;
-  font-size: 15px;
-
+  font-size: 18px;
+  font-weight: 700;
+  
   .key {
-    height: 30px;
-    width: 30px;
+    height: 50px;
+    width: 40px;
     display: flex;
     margin: 2px;
     align-items: center;
     justify-content: center;
     background-color: #adadad;
-    border-radius: 2px;
+    border-radius: 4px;
     cursor: ${(props: KeysGridProps) =>
       props.disableClick ? "not-allowed" : "pointer"};
     &.disabled {
@@ -60,13 +61,24 @@ const KeysGrid = styled.div`
       cursor: none;
     }
   }
-
   .key-ENTER,
   .key-ENTRÉE,
   .key-CLEAR,
   .key-RETOUR {
     padding: 0 1.5em;
     cursor: pointer;
+  }
+  
+  @media screen and (max-width: 400px) {
+    font-size: 15px;
+    width: 320px;
+    grid-gap: 2px;
+    margin: 0px auto 5px;
+
+    .key {
+      height: 45px;
+      width: 28px;
+    }
   }
 `;
 
@@ -79,7 +91,7 @@ const Keys = ({
   submitInput,
 }: {
   locale: string;
-  disabledKeys: string[];
+  disabledKeys: string[]; // TODO: => absentKeys
   disableClick: boolean;
   addLetter: (a: string) => void;
   clearInput: () => void;
@@ -120,6 +132,7 @@ const Keys = ({
         className={
           isDisabled(key) ? `disabled key key-${key}` : `key key-${key}`
         }
+        // FIXME : replace disabled by "absent"
       >
         {key}
       </div>

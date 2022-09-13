@@ -22,11 +22,11 @@
 
 .App-board {
   font-family: Arial, Helvetica, sans-serif;
-  margin: 40px auto 20px;
+  margin: 30px auto;
   display: grid;
   grid-template-rows: repeat(6, 1fr);
   grid-gap: 10px;
-  height: 400px;
+  height: 420px;
   width: 350px;
 }
 .App-board .row {
@@ -53,14 +53,18 @@
   .App-header {
     font-size: 13px;
     width: 260px;
+    height: 100px;
+  }
+  .App-header h1 {
+    font-size: 40px;
+    padding-top: 30px;
   }
   .App-board {
-    margin: 20px auto;
     display: grid;
     grid-template-rows: repeat(6, 1fr);
     grid-gap: 10px;
-    height: 320px;
-    width: 270px;
+    height: 400px;
+    width: 340px;
   }
   .App-board .tile {
     font-size: 1.6em;
