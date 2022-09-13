@@ -304,6 +304,7 @@ function App() {
         onClose={() => setIsOpen(false)}
         hasWon={hasWon}
         answer={wurdle}
+        locale={locale}
       />
     </div>
   );

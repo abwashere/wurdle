@@ -46,11 +46,13 @@ const ResultModal = ({
   onClose,
   hasWon,
   answer,
+  locale,
 }: {
   isOpen: boolean;
   onClose: () => void;
   hasWon: null | boolean;
   answer: string;
+  locale: string;
 }) => {
   if (!isOpen) return null;
 
@@ -58,8 +60,16 @@ const ResultModal = ({
     <>
       <Overlay />
       <StyledContainer>
-        <p>{hasWon ? "NICE JOB!" : "OH NOOO :("}</p>
-        <p>The answer was</p>
+        <p>
+          {locale === "en"
+            ? hasWon
+              ? "NICE JOB!"
+              : "OH NOOO :("
+            : hasWon
+            ? "BIEN JOUÉ !"
+            : "OH NON :("}
+        </p>
+        <p>{locale === "en" ? "The answer was" : "La réponse était"}</p>
         <p className="answer">{answer}</p>
 
         <CloseButton onClick={onClose}>X</CloseButton>
