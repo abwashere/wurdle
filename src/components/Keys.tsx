@@ -35,20 +35,19 @@ const KeysGrid = styled.div`
         : "repeat(8, 1fr)";
     }
   }};
-  grid-gap: 5px;
+  grid-gap: 7px;
   justify-content: center;
-  width: 350px;
-  margin: 0px auto 8px;
+  max-width: 300px;
+  margin: 0px auto 7px;
   color: #fff;
   font-family: Arial, Helvetica, sans-serif;
   font-size: 18px;
   font-weight: 700;
 
   .key {
-    height: 50px;
-    width: 40px;
+    height: 45px;
+    width: 35px;
     display: flex;
-    margin: 2px;
     align-items: center;
     justify-content: center;
     background-color: #adadad;
@@ -64,19 +63,24 @@ const KeysGrid = styled.div`
   .key-ENTRÉE,
   .key-CLEAR,
   .key-RETOUR {
-    padding: 0 1.5em;
+    width: 105px;
     cursor: pointer;
   }
 
   @media screen and (max-width: 400px) {
-    font-size: 15px;
-    width: 320px;
-    grid-gap: 2px;
-    margin: 0px auto 5px;
+    font-size: 14px;
+    /* max-width: 350px; */
 
     .key {
-      height: 45px;
-      width: 28px;
+      height: 50px;
+      width: 29px;
+    }
+    .key-ENTER,
+    .key-ENTRÉE,
+    .key-CLEAR,
+    .key-RETOUR {
+      width: fit-content;
+      padding: 0px 2px;
     }
   }
 `;
