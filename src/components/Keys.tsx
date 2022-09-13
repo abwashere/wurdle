@@ -43,7 +43,7 @@ const KeysGrid = styled.div`
   font-family: Arial, Helvetica, sans-serif;
   font-size: 18px;
   font-weight: 700;
-  
+
   .key {
     height: 50px;
     width: 40px;
@@ -55,10 +55,9 @@ const KeysGrid = styled.div`
     border-radius: 4px;
     cursor: ${(props: KeysGridProps) =>
       props.disableClick ? "not-allowed" : "pointer"};
-    &.disabled {
+    &.absent {
       color: #484a4d;
       background-color: #282c34;
-      cursor: none;
     }
   }
   .key-ENTER,
@@ -68,7 +67,7 @@ const KeysGrid = styled.div`
     padding: 0 1.5em;
     cursor: pointer;
   }
-  
+
   @media screen and (max-width: 400px) {
     font-size: 15px;
     width: 320px;
@@ -84,14 +83,14 @@ const KeysGrid = styled.div`
 
 const Keys = ({
   locale,
-  disabledKeys,
+  absentKeys,
   disableClick,
   addLetter,
   clearInput,
   submitInput,
 }: {
   locale: string;
-  disabledKeys: string[]; // TODO: => absentKeys
+  absentKeys: string[]; // TODO: => absentKeys
   disableClick: boolean;
   addLetter: (a: string) => void;
   clearInput: () => void;
@@ -104,8 +103,8 @@ const Keys = ({
   const keyboardLastRow =
     locale === "fr" ? frKeyboardLastRow : enKeyboardLastRow;
 
-  function isDisabled(letter: string) {
-    if (disabledKeys.find((key) => key.toUpperCase() === letter)) {
+  function isAbsent(letter: string) {
+    if (absentKeys.find((key) => key.toUpperCase() === letter)) {
       return true;
     }
     return false;
@@ -120,7 +119,7 @@ const Keys = ({
     } else if (disableClick) {
       return; // no action allowed unless attempt is cleared
     } else {
-      !isDisabled(key) && addLetter(key);
+      addLetter(key);
     }
   }
 
@@ -129,10 +128,7 @@ const Keys = ({
       <div
         key={key}
         onClick={handleClick}
-        className={
-          isDisabled(key) ? `disabled key key-${key}` : `key key-${key}`
-        }
-        // FIXME : replace disabled by "absent"
+        className={isAbsent(key) ? `absent key key-${key}` : `key key-${key}`}
       >
         {key}
       </div>

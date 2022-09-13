@@ -88,7 +88,7 @@ function App() {
   const [hasWon, setHasWon] = React.useState<null | boolean>(null);
   const [isOpen, setIsOpen] = React.useState(false);
   const [wurdle, setWurdle] = React.useState("");
-  const [disabledLetters, setDisabledLetters] = React.useState<string[]>([]);
+  const [absentLetters, setAbsentLetters] = React.useState<string[]>([]);
   const [disableClick, setDisableClick] = React.useState(false);
 
   const checkAnswer = (lettersArr: string[]): ILetter[] => {
@@ -204,6 +204,7 @@ function App() {
           i === attemptsList.length - 1
             ? true
             : attemptsList[i + 1].every((tile) => tile.letter === "");
+        // FIXME: might not be true for last attempt
 
         if (!isCurrentAttemptEmpty && isNextAttemptEmpty) {
           // If input is not a word of the list, make it shake
@@ -236,7 +237,7 @@ function App() {
           wrongLetters.push(letter);
         }
       }
-      setDisabledLetters([...disabledLetters, ...wrongLetters]);
+      setAbsentLetters([...absentLetters, ...wrongLetters]);
       setDisableClick(false);
 
       setInput("");
@@ -291,7 +292,7 @@ function App() {
 
       <Keys
         locale={locale}
-        disabledKeys={disabledLetters}
+        absentKeys={absentLetters}
         disableClick={disableClick}
         addLetter={addLetter}
         clearInput={handleClear}
