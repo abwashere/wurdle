@@ -1,5 +1,4 @@
-import React from "react";
-import ReactDOM from "react-dom";
+import { createPortal } from "react-dom";
 import styled from "styled-components";
 
 const StyledContainer = styled.div`
@@ -56,7 +55,7 @@ const ResultModal = ({
 }) => {
   if (!isOpen) return null;
 
-  return ReactDOM.createPortal(
+  return createPortal(
     <>
       <Overlay />
       <StyledContainer>

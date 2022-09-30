@@ -1,7 +1,7 @@
-import React from "react";
+import { useState } from "react";
 import styled from "styled-components";
-import { LANG_SELECT_HEIGHT, EN_LOCAL, FR_LOCAL } from "../constants";
 
+import { EN_LOCAL, FR_LOCAL, LANG_SELECT_HEIGHT } from "../constants";
 import { ReactComponent as Globe } from "./assets/globe-solid.svg";
 
 const StyledDiv = styled.div`
@@ -34,7 +34,7 @@ const LanguageSelect = ({
   setLocale: (a: string) => void;
   disabled: boolean;
 }) => {
-  const [openSelect, setOpenSelect] = React.useState(false);
+  const [openSelect, setOpenSelect] = useState(false);
 
   const handleChange = (e: any) => {
     let val = e.target.value;

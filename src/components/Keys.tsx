@@ -1,15 +1,8 @@
-import styled from "styled-components";
-import {
-  frKeyboardFirstRow,
-  frKeyboardSecondRow,
-  frKeyboardLastRow,
-} from "./data/frKeyboard";
-import {
-  enKeyboardFirstRow,
-  enKeyboardSecondRow,
-  enKeyboardLastRow,
-} from "./data/enKeyboard";
-import { EN_LOCAL, FR_LOCAL } from "../constants";
+import styled from 'styled-components';
+
+import { EN_LOCAL, FR_LOCAL } from '../constants';
+import { enKeyboardFirstRow, enKeyboardLastRow, enKeyboardSecondRow } from './data/enKeyboard';
+import { frKeyboardFirstRow, frKeyboardLastRow, frKeyboardSecondRow } from './data/frKeyboard';
 
 type KeysGridProps = {
   row: number;

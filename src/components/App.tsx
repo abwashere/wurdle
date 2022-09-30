@@ -1,16 +1,15 @@
-import React from "react";
+import "./App.css";
+
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 
 import { EN_LOCAL, FR_LOCAL } from "../constants";
-import FR_WORDS from "./data/frWords";
-import EN_WORDS from "./data/enWords";
 import { revealTile, shakeTiles } from "./animations";
-
-import ResultModal from "./ResultModal";
-import LanguageSelect from "./LanguageSelect";
+import EN_WORDS from "./data/enWords";
+import FR_WORDS from "./data/frWords";
 import Keys from "./Keys";
-
-import "./App.css";
+import LanguageSelect from "./LanguageSelect";
+import ResultModal from "./ResultModal";
 
 const StyledDiv = styled.div<any>`
   &.rotation {
@@ -82,14 +81,14 @@ export const Row = ({ attempt }: { attempt: ILetter[] }) => {
 };
 
 function App() {
-  const [locale, setLocale] = React.useState(FR_LOCAL);
-  const [input, setInput] = React.useState("");
-  const [attemptsList, setAttemptsList] = React.useState(emptyGrid);
-  const [hasWon, setHasWon] = React.useState<null | boolean>(null);
-  const [isOpen, setIsOpen] = React.useState(false);
-  const [wurdle, setWurdle] = React.useState("");
-  const [absentLetters, setAbsentLetters] = React.useState<string[]>([]);
-  const [disableClick, setDisableClick] = React.useState(false);
+  const [locale, setLocale] = useState(FR_LOCAL);
+  const [input, setInput] = useState("");
+  const [attemptsList, setAttemptsList] = useState(emptyGrid);
+  const [hasWon, setHasWon] = useState<null | boolean>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [wurdle, setWurdle] = useState("");
+  const [absentLetters, setAbsentLetters] = useState<string[]>([]);
+  const [disableClick, setDisableClick] = useState(false);
 
   const checkAnswer = (lettersArr: string[]): ILetter[] => {
     let statusArr = [];
@@ -245,7 +244,7 @@ function App() {
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (
       attemptsList.some((attempt) =>
         attempt.every((tile) => tile.state === "correct")
@@ -265,7 +264,7 @@ function App() {
     }
   }, [attemptsList, hasWon]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const newWord =
       locale === EN_LOCAL
         ? EN_WORDS[Math.floor(Math.random() * EN_WORDS.length)]
