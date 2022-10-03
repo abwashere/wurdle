@@ -1,8 +1,16 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
-import { EN_LOCAL, FR_LOCAL } from '../constants';
-import { enKeyboardFirstRow, enKeyboardLastRow, enKeyboardSecondRow } from './data/enKeyboard';
-import { frKeyboardFirstRow, frKeyboardLastRow, frKeyboardSecondRow } from './data/frKeyboard';
+import { EN_LOCAL, FR_LOCAL } from "../constants";
+import {
+  enKeyboardFirstRow,
+  enKeyboardLastRow,
+  enKeyboardSecondRow,
+} from "./data/enKeyboard";
+import {
+  frKeyboardFirstRow,
+  frKeyboardLastRow,
+  frKeyboardSecondRow,
+} from "./data/frKeyboard";
 
 type KeysGridProps = {
   row: number;
@@ -120,7 +128,7 @@ const Keys = ({
     }
   }
 
-  function getKeys(key: string) {
+  function getKey(key: string) {
     return (
       <div
         key={key}
@@ -135,13 +143,13 @@ const Keys = ({
   return (
     <>
       <KeysGrid row={1} locale={locale} disableClick={disableClick}>
-        {keyboardFirstRow.map((key) => getKeys(key))}
+        {keyboardFirstRow.map((key) => getKey(key))}
       </KeysGrid>
       <KeysGrid row={2} locale={locale} disableClick={disableClick}>
-        {keyboardSecondRow.map((key) => getKeys(key))}
+        {keyboardSecondRow.map((key) => getKey(key))}
       </KeysGrid>
       <KeysGrid row={3} locale={locale} disableClick={disableClick}>
-        {keyboardLastRow.map((key) => getKeys(key))}
+        {keyboardLastRow.map((key) => getKey(key))}
       </KeysGrid>
     </>
   );

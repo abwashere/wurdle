@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, memo } from "react";
 import styled from "styled-components";
 
 import { EN_LOCAL, FR_LOCAL, LANG_SELECT_HEIGHT } from "../constants";
@@ -65,4 +65,4 @@ const LanguageSelect = ({
   );
 };
 
-export default LanguageSelect;
+export default memo(LanguageSelect);
